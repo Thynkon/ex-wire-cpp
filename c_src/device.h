@@ -2,13 +2,15 @@
 
 #define _DEVICE_H_
 
-#include <iostream>
 #include <pcap.h>
-#include <vector>
 #include <string>
+#include <string_view>
+#include <vector>
 
 namespace Device {
- std::vector<std::string> list_all();
+    std::vector<std::string> list_all();
+
+    void capture(std::string_view iface, std::string_view filter);
 };
 
 #endif

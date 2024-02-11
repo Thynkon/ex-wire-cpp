@@ -5,13 +5,9 @@ project(exwire-pcap)
 # clang 17 and greater can avoid this setting
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
-# set(CMAKE_CXX_SCAN_FOR_MODULES TRUE)
-set(CMAKE_CXX_COMPILER clang++)
 
-# target_sources(pcap PUBLIC FILE_SET CXX_MODULES FILES device.cppm)
-
-add_executable(exwire-exec main.cpp device.cpp)
-add_library(exwire SHARED libpcap.cpp device.cpp)
+add_executable(exwire-exec main.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp pcap_wrapper.cpp)
+add_library(exwire SHARED libpcap.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp pcap_wrapper.cpp)
 
 # set include directories
 target_include_directories(exwire PRIVATE "/home/thynkon/.asdf/installs/erlang/26.2.1/usr/include")
