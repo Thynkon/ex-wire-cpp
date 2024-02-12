@@ -6,8 +6,8 @@ project(exwire-pcap)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(exwire-exec main.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp pcap_wrapper.cpp)
-add_library(exwire SHARED libpcap.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp pcap_wrapper.cpp)
+add_executable(exwire-exec main.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp protocols/protocol.cpp protocols/http.cpp pcap_wrapper.cpp)
+add_library(exwire SHARED libpcap.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp protocols/http.cpp  pcap_wrapper.cpp)
 
 # set include directories
 target_include_directories(exwire PRIVATE "/home/thynkon/.asdf/installs/erlang/26.2.1/usr/include")
@@ -15,3 +15,6 @@ target_include_directories(exwire-exec PRIVATE pcap)
 
 target_link_libraries(exwire-exec PRIVATE pcap)
 target_link_libraries(exwire PRIVATE pcap)
+
+# add compilation flags to compiler
+target_compile_options(exwire PRIVATE -g)

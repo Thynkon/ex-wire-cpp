@@ -4,13 +4,16 @@
 using namespace std;
 
 TcpPacket::TcpPacket(const u_char *pkt) : Packet(pkt) {
+  type = PacketType::Tcp;
   tcp = (struct tcphdr *)packet;
 
-  u_char *begin = (u_char *)(packet + 4 * ip->ip_hl);
-  size_t length = ntohs(ip->ip_len) - (4 * ip->ip_hl);
+  u_char *begin = (u_char *)(packet + (4 * tcp->th_off));
+  size_t length = ntohs(ip->ip_len) - (4 * ip->ip_hl) - (4 * tcp->th_off);
 
   payload = Payload(begin, length);
 }
+
+PacketType TcpPacket::get_type() const { return type; }
 
 ostream &operator<<(ostream &os, const TcpPacket &packet) {
   char iphdrInfo[256];
@@ -32,7 +35,8 @@ ostream &operator<<(ostream &os, const TcpPacket &packet) {
      << ntohl(packet.tcp->th_ack) << ntohs(packet.tcp->th_win)
      << 4 * packet.tcp->th_off << endl;
   os << "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" << endl;
-  os << "Payload: " << packet.payload << endl;
+  os << "Payload: " << packet.get_payload()
+     << ", length: " << packet.payload.length << endl;
   os << "+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+" << endl;
   return os;
 }

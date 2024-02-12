@@ -10,6 +10,7 @@ private:
 
 public:
   TcpPacket(const u_char *pkt);
+  PacketType get_type() const;
 
   friend std::ostream &operator<<(std::ostream &os, const TcpPacket &packet);
 };

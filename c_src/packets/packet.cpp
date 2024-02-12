@@ -9,6 +9,7 @@
 #include <netinet/udp.h>
 #include <ostream>
 #include <pcap/pcap.h>
+#include <string_view>
 
 using namespace std;
 
@@ -35,7 +36,7 @@ Packet::Packet() {
   eth = nullptr;
 }
 
-Packet::Packet(const u_char *p) {
+Packet::Packet(frame_data *p) {
   packet = p;
 
   // Skip over the Ethernet header
@@ -59,7 +60,7 @@ u_int8_t get_protocol(const u_char *packet) {
   return ip->ip_p;
 }
 
-Packet PacketFactory::create(const u_char *packet) {
+Packet PacketFactory::create(frame_data *packet) {
   switch (get_protocol(packet)) {
   case IPPROTO_TCP:
     cout << "Creating TCP packet" << endl;
@@ -73,4 +74,8 @@ Packet PacketFactory::create(const u_char *packet) {
     cout << "Creating default packet" << endl;
     return Packet(packet);
   }
+}
+
+string_view Packet::get_payload() const {
+  return string_view((char *)payload.data, payload.length);
 }

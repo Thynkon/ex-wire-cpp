@@ -17,8 +17,18 @@
 #include <unistd.h>
 #include <vector>
 
-class Payload {
-private:
+using frame_data = const u_char;
+using packet_data = frame_data;
+
+enum class PacketType {
+  Tcp,
+  Udp,
+  Icmp,
+};
+
+class Packet;
+
+struct Payload {
   u_char *data;
   size_t length;
 
@@ -36,6 +46,7 @@ protected:
   struct ip *ip;
   const u_char *packet;
   Payload payload;
+  PacketType type;
 
   /* Header lengths in bytes */
   static size_t const ETHERNET_HEADER_LENGTH = 14;
@@ -43,11 +54,13 @@ protected:
 public:
   Packet();
 
-  Packet(const u_char *p);
+  Packet(frame_data *p);
 
   char *get_src_ip() const;
 
   char *get_dst_ip() const;
+  PacketType get_type() const;
+  std::string_view get_payload() const;
 };
 
 class PacketFactory {

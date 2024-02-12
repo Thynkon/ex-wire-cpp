@@ -18,6 +18,7 @@
 #include "packets/tcp.h"
 #include "packets/udp.h"
 #include "pcap_wrapper.h"
+#include "protocols/protocol.h"
 #include <signal.h>
 #include <stdio.h>
 
@@ -28,9 +29,16 @@ int packets;
 using namespace std;
 
 void packet_handler(u_char *user, const struct pcap_pkthdr *packet_header,
-                    const u_char *packet) {
-  TcpPacket packet1(packet);
-  cout << "PACKET ==>" << packet1 << endl;
+                    frame_data *packet) {
+  TcpPacket pkt(packet);
+  /* cout << "USER ==> " << user; */
+
+  if (pkt.get_type() == PacketType::Tcp) {
+    if (Protocol::detect(pkt) == ProtocolType::HTTP) {
+      // parse HTTP packet
+      cout << "PACKET ==>" << pkt << endl;
+    }
+  }
 }
 
 void stop_capture(int signo) {
@@ -90,6 +98,9 @@ void capture(string_view device, string_view filter) {
   handle = pcap_open_live(device.data(), BUFSIZ, 1, 1000, errbuf);
   if (handle == NULL) {
     cerr << "pcap_open_live(): " << errbuf << endl;
+    free(handle);
+    handle = nullptr;
+    return;
   }
 
   // Convert the packet filter epxression into a packet filter binary.
@@ -108,6 +119,7 @@ void capture(string_view device, string_view filter) {
   // Create packet capture handle.
   handle = create_pcap_handle(device, filter);
   if (handle == NULL) {
+    cerr << "Failed to create handle" << endl;
     // return -1;
   }
   signal(SIGINT, stop_capture);
@@ -117,6 +129,7 @@ void capture(string_view device, string_view filter) {
   // Get the type of link layer.
   get_link_header_len(handle, linkhdrlen);
   if (linkhdrlen == 0) {
+    cerr << "Unkown link layer" << endl;
     /* return -1; */
   }
 
