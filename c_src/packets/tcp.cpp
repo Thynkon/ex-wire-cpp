@@ -3,7 +3,8 @@
 
 using namespace std;
 
-TcpPacket::TcpPacket(const u_char *pkt) : Packet(pkt) {
+TcpPacket::TcpPacket(const u_char *pkt, size_t ethernet_header_length)
+    : Packet(pkt, ethernet_header_length) {
   type = PacketType::Tcp;
   tcp = (struct tcphdr *)packet;
 

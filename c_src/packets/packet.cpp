@@ -31,23 +31,24 @@ ostream &operator<<(ostream &os, const Payload &payload) {
 }
 
 Packet::Packet() {
-  packet = nullptr;
-  ip = nullptr;
-  eth = nullptr;
+  this->packet = nullptr;
+  this->ip = nullptr;
+  this->eth = nullptr;
 }
 
-Packet::Packet(frame_data *p) {
-  packet = p;
+Packet::Packet(frame_data *packet, size_t ethernet_header_length) {
+  this->packet = packet;
+  this->ethernet_header_length = ethernet_header_length;
 
   // Skip over the Ethernet header
-  packet += Packet::ETHERNET_HEADER_LENGTH;
+  this->packet += ethernet_header_length;
 
   /* Find start of IP header */
-  ip = (struct ip *)(packet);
+  this->ip = (struct ip *)(this->packet);
 
   // Advance to the transport layer header then parse and display
   // the fields based on the type of header: tcp, udp or icmp.
-  packet += 4 * ip->ip_hl;
+  this->packet += 4 * ip->ip_hl;
 }
 
 char *Packet::get_src_ip() const { return inet_ntoa(ip->ip_src); }
@@ -58,22 +59,6 @@ u_int8_t get_protocol(const u_char *packet) {
   struct ip *ip;
   ip = (struct ip *)(packet + 14);
   return ip->ip_p;
-}
-
-Packet PacketFactory::create(frame_data *packet) {
-  switch (get_protocol(packet)) {
-  case IPPROTO_TCP:
-    cout << "Creating TCP packet" << endl;
-    return TcpPacket(packet);
-  case IPPROTO_UDP:
-    cout << "Creating UDP packet" << endl;
-    return UdpPacket(packet);
-  case IPPROTO_ICMP:
-    // return IcmpPacket(packet);
-  default:
-    cout << "Creating default packet" << endl;
-    return Packet(packet);
-  }
 }
 
 string_view Packet::get_payload() const {

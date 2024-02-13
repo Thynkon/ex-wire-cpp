@@ -1,6 +1,7 @@
 *.so
 .cmake
 .ninja
+.ninja*
 CMakeCache.txt
 CMakeCache.txt
 CMakeFiles
@@ -8,13 +9,14 @@ CMakeLists.txt.user
 CMakeScripts
 CTestTestfile.cmake
 Makefile
+Makefile
 Testing
 _deps
+build*
 cmake_install.*
 cmake_install.cmake
 compile_commands.json
-install_manifest.txt
 exwire*
+install_manifest.txt
+perf.*
 vgcore*
-build*
-.ninja*

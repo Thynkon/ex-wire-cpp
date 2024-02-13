@@ -44,17 +44,14 @@ class Packet {
 protected:
   ether_header *eth;
   struct ip *ip;
-  const u_char *packet;
+  packet_data *packet;
   Payload payload;
   PacketType type;
-
-  /* Header lengths in bytes */
-  static size_t const ETHERNET_HEADER_LENGTH = 14;
+  size_t ethernet_header_length;
 
 public:
   Packet();
-
-  Packet(frame_data *p);
+  Packet(frame_data *p, size_t ethernet_header_length);
 
   char *get_src_ip() const;
 

@@ -10,11 +10,10 @@ add_executable(exwire-exec main.cpp device.cpp packets/packet.cpp packets/tcp.cp
 add_library(exwire SHARED libpcap.cpp device.cpp packets/packet.cpp packets/tcp.cpp packets/udp.cpp protocols/http.cpp  pcap_wrapper.cpp)
 
 # set include directories
-target_include_directories(exwire PRIVATE "/home/thynkon/.asdf/installs/erlang/26.2.1/usr/include")
 target_include_directories(exwire-exec PRIVATE pcap)
+target_include_directories(exwire PRIVATE "/home/thynkon/.asdf/installs/erlang/26.2.1/usr/include")
 
 target_link_libraries(exwire-exec PRIVATE pcap)
 target_link_libraries(exwire PRIVATE pcap)
 
-# add compilation flags to compiler
-target_compile_options(exwire PRIVATE -g)
+target_compile_options(exwire-exec PRIVATE -O3 -fno-omit-frame-pointer -flto)

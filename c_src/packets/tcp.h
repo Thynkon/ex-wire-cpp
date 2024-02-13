@@ -9,7 +9,7 @@ private:
   struct tcphdr *tcp;
 
 public:
-  TcpPacket(const u_char *pkt);
+  TcpPacket(const u_char *pkt, size_t ethernet_header_length);
   PacketType get_type() const;
 
   friend std::ostream &operator<<(std::ostream &os, const TcpPacket &packet);
