@@ -1,16 +1,12 @@
-#include "device.h"
-#include "packets/icmp.h"
-#include "packets/packet.h"
-#include "packets/tcp.h"
-#include "packets/udp.h"
-#include "pcap_wrapper.h"
-#include "protocols/protocol.h"
+module;
+
 #include <format>
 #include <iostream>
 #include <netinet/ip_icmp.h>
 #include <netinet/tcp.h>
 #include <netinet/udp.h>
 #include <ostream>
+#include <pcap.h>
 #include <pcap/pcap.h>
 #include <signal.h>
 #include <stdio.h>
@@ -20,29 +16,34 @@
 #include <string_view>
 #include <vector>
 
+import Packet;
+import Protocol;
+import PcapWrapper;
+
+export module Device;
+
 using namespace std;
 
 PcapWrapper pcap_wrapper{};
 
+export namespace Device {
 void packet_handler(u_char *user, const struct pcap_pkthdr *packet_header,
-                    frame_data *packet) {
+                    Packet::frame_data *packet) {
   static size_t ethernet_header_length = pcap_wrapper.get_link_header_len();
-  TcpPacket pkt(packet, ethernet_header_length);
+  Packet::TcpPacket pkt(packet, ethernet_header_length);
 
-  if (pkt.get_type() == PacketType::Tcp) {
-    switch (Protocol::detect(pkt)) {
-    case ProtocolType::HTTP:
-      // parse HTTP packet
-      cout << "PACKET ==>" << pkt << endl;
+  if (pkt.get_type() == Packet::PacketType::Tcp) {
+    switch (Protocol::Protocol::detect(pkt)) {
+    case Protocol::ProtocolType::HTTP: {
+      Protocol::Http http{pkt};
       break;
+    }
 
     default:
       break;
     }
   }
 }
-
-namespace Device {
 
 vector<string> list_all() {
   vector<string> result;
